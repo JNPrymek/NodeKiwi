@@ -1,0 +1,21 @@
+{
+  "name": "nodekiwi",
+  "version": "0.0.1",
+  "description": "Node.js Wrappers for Kiwi TCMS api",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "debug": "node ./debug/app.js"
+  },
+  "author": "Jacob N Prymek",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "axios-cookiejar-support": "^1.0.1",
+    "boxen": "^5.0.0",
+    "chalk": "^4.1.0",
+    "lodash": "^4.17.20",
+    "tough-cookie": "^4.0.0"
+  }
+}
