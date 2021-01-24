@@ -10,9 +10,14 @@ import TestExecutionStatus from '../models/testExecutionStatus.js';
 // DEV ONLY ignore SSL Certificate
 // process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
+// TODO - Accept date from CLI arg
 const sourceDate = new Date();
 const startDate = TimeUtils.startOfWeek(sourceDate);
 const endDate = TimeUtils.weekAfter(startDate);
+
+const BOXEN_DATE_SETTINGS = {borderStyle: 'classic', 
+							padding: {top: 0, bottom: 0, left: 15, right: 16}};
+const NAME_MAX_WIDTH = 10;
 
 const results = {};
 let outString = '';
@@ -23,9 +28,9 @@ main();
 
 async function main() {
 	await Kiwi.login();
-	outString = `Getting TestExecution Data for week of ${chalk.green(TimeUtils.dateToLocalString(sourceDate))}`;
+	outString = `TestExecution Metrics for Week of ${chalk.green(TimeUtils.dateToLocalString(sourceDate))}`;
 	outString += `\n(${chalk.green(TimeUtils.dateToLocalString(startDate))} to ${chalk.green(TimeUtils.dateToLocalString(endDate))})`
-	console.log(boxen(outString, {borderStyle: 'classic'}));
+	console.log(boxen(outString, BOXEN_DATE_SETTINGS));
 	
 
 	const ex = await TestExecution.getByDate(startDate, endDate);
@@ -44,24 +49,15 @@ async function main() {
 		statColors[stat.getName()] = stat.getColor();
 	});
 	
-	//find length of longest user name
-	const userNames = Object.keys(results);
-	let userNameMaxLength = 0;
-	userNames.forEach(name => {
-		if (name.length > userNameMaxLength) {
-			userNameMaxLength = name.length;
-		}
-	})
-	
 	outString = '';
 	for (const [userName, userMetrics] of Object.entries(results)) {
-		outString += `${chalk.bold(userName.padStart(userNameMaxLength, ' '))} : `;
+		outString += `${chalk.bold(userName.padStart(NAME_MAX_WIDTH, ' '))} : `;
 		//console.log(userName);
 		//console.log(userMetrics);
 		// Interate through metrics
 		for (const [statName, statColor] of Object.entries(statColors)) {
 			let statCount = userMetrics[statName] || 0;
-			statCount = statCount.toString().padStart(2, '0');
+			statCount = statCount.toString().padStart(3, '0');
 			outString += `  ${chalk.bold.hex(statColor)(statName)}: ${chalk.hex(statColor)(statCount)}`
 		}
 		//console.log(outString);
