@@ -8,7 +8,7 @@ import Kiwi from "../kiwi_connector/kiwi.js";
 import TestExecutionStatus from '../models/testExecutionStatus.js';
 
 // DEV ONLY ignore SSL Certificate
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+// process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 const sourceDate = new Date();
 const startDate = TimeUtils.startOfWeek(sourceDate);
