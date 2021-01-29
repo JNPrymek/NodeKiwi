@@ -15,7 +15,7 @@ export default class TimeUtils {
 		return `${year}-${month}-${day} ${hour}:${min}:${sec}${timeZone}`;
 	}
 	
-	static dateToLocalString(date) {
+	static dateToLocalString(date, includeTime = true) {
 		this._assertDate(date);
 		
 		const day = this._padNumber(date.getDate());
@@ -24,7 +24,13 @@ export default class TimeUtils {
 		const hour = this._padNumber(date.getHours());
 		const min = this._padNumber(date.getMinutes());
 		const sec = this._padNumber(date.getSeconds());
-		return `${year}-${month}-${day} ${hour}:${min}:${sec}`;
+		if (includeTime) {
+			return `${year}-${month}-${day} ${hour}:${min}:${sec}`;
+		}
+		else {
+			return `${year}-${month}-${day}`;
+		}
+		
 	}
 
 	static _padNumber(num, digits = 2) {
