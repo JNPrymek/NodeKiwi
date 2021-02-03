@@ -87,4 +87,9 @@ export default class TimeUtils {
 		
 		return weekStart;
 	}
+	
+	static stringIsValidDate(string) {
+		const date = new Date(string);
+		return Boolean(+date);
+	}
 }

@@ -3,6 +3,8 @@ import Axios from 'axios';
 import AxiosCookieJarSupport from 'axios-cookiejar-support';
 import ToughCookie from 'tough-cookie';
 
+import ConnectionError from '../models/errors/connectionError.js';
+
 AxiosCookieJarSupport.default(Axios);
 
 export default class RequestHandler {
@@ -45,7 +47,12 @@ export default class RequestHandler {
         sendHeaders.Cookie = await this.cookieJar.getCookieString(url);
         
         //Send request & await response
-        const response = await Axios.post(url, JSON.stringify(sendBody), {headers: sendHeaders});
+		const response = await Axios
+			.post(url, JSON.stringify(sendBody), {headers: sendHeaders})
+			.catch(err => {
+				const errMsg = `Network Error   ${err.errno} : ${err.code}`;
+				throw new ConnectionError(errMsg);
+			});
         
         // Save cookies if applicable
         const responseCookies = response.headers['set-cookie'];

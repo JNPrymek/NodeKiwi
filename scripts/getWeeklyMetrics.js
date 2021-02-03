@@ -3,24 +3,21 @@
 import chalk from 'chalk';
 import boxen from 'boxen';
 import yargs from 'yargs';
+import { hideBin } from 'yargs/helpers';
 
 import TimeUtils from "../utils/TimeUtils.js";
 import TestExecution from '../models/testExecution.js';
 import Kiwi from "../kiwi_connector/kiwi.js";
 import TestExecutionStatus from '../models/testExecutionStatus.js';
+import ConnectionError from '../models/errors/connectionError.js';
 
 // DEV ONLY ignore SSL Certificate
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-
-const todayDateString = TimeUtils.dateToLocalString(TimeUtils.today(), false);
+// process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 let args = 
-	yargs(process.argv.slice(2))
+	yargs(hideBin(process.argv))
 	.scriptName('getWeeklyMetrics')
-	.usage('Usage: $0 -d [anchorDate] -w [weekStartIndex]')
-	.describe('anchorDate', 'Any date within the week of metrics.  Used to calculate start/end of date range.')
-	.default('anchorDate', todayDateString)
-	.alias('d', 'anchorDate')
+	.usage('Usage: $0 [anchorDate] -w [weekStartIndex]')
 	.option('weekStartIndex', {
 		alias: 'w',
 		demandOption: false,
@@ -29,10 +26,11 @@ let args =
 		describe: 'Index of first day of week.  Sun=0, Mon=1, Tues=2 ...',
 		type: 'number'
 	})
+	.string('_')
 	.alias('h', 'help')
 	.argv;
 
-const sourceDate = new Date(args.anchorDate);
+const sourceDate = (args._[0] && TimeUtils.stringIsValidDate(args._[0])) ? new Date(args._[0]) : new Date();
 const startDate = TimeUtils.startOfWeek(sourceDate);
 // adjust for start of week
 const weekStartOffset = args.weekStartIndex;
@@ -58,13 +56,33 @@ let outString = '';
 main();
 
 async function main() {
-	await Kiwi.login();
+	
+	let stats = null;
+	let ex = null;
+	try {
+		await Kiwi.login();
+		stats = await TestExecutionStatus.filter({'name__in' : ['PASSED', 'FAILED', 'BLOCKED', 'WAIVED', 'ERROR']});
+		ex = await TestExecution.getByDate(startDate, endDate);
+		await Kiwi.logout();
+	}
+	catch (err) {
+		let errMsg = '';
+		if (err instanceof ConnectionError) {
+			errMsg += 'Program aborted due to network error';
+		}
+		else {
+			errMsg += 'Program aborted due to unrecognized error';
+		}
+		errMsg += '\n' + err.message;
+		console.log(chalk.red(errMsg));
+		process.exit(1);
+	}
+	
 	outString = `TestExecution Metrics for Week of ${chalk.green(TimeUtils.dateToLocalString(sourceDate, false))}`;
 	outString += `\n(${chalk.green(TimeUtils.dateToLocalString(startDate))} to ${chalk.green(TimeUtils.dateToLocalString(endDate))})`
 	console.log(boxen(outString, BOXEN_DATE_SETTINGS));
 	
 
-	const ex = await TestExecution.getByDate(startDate, endDate);
 	// Handle case for 0 executions in specified week
 	if (ex.length == 0) {
 		outString = `No TestExecutions found for week of ${chalk.green(TimeUtils.dateToLocalString(startDate, false))} to ${chalk.green(TimeUtils.dateToLocalString(endDate, false))}`;
@@ -78,8 +96,6 @@ async function main() {
 		upsertExecutionCount(user, status);
 	});
 	
-	//const stats = await TestExecutionStatus.getAll();
-	const stats = await TestExecutionStatus.filter({'name__in' : ['PASSED', 'FAILED', 'BLOCKED', 'WAIVED', 'ERROR']});
 	
 	const statColors = {};
 	stats.forEach(stat => {
