@@ -28,7 +28,7 @@ export default class KiwiBase {
 			throw new Error(JSON.stringify(response.error));
 		}
 		
-		if (response.result) {
+		if (response.result || response.result == null) {
 			return response.result;
 		} else {
 			throw new ConnectionError("Kiwi - no results or error" + JSON.stringify(response));
@@ -46,7 +46,7 @@ export default class KiwiBase {
 	// 	return  await this.callServerFunction('update', [id, updateDict]);
 	// }
 	
-	async update(updateDict) {
+	async update(updateDict = {}) {
 		const id = this._source.id;
 		const newSource = await this.constructor.callServerFunction('update', [id, updateDict]);
 		this._source = newSource;

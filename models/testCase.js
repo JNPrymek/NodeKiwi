@@ -1,6 +1,8 @@
 import KiwiBase from './kiwiBase.js';
 import TimeUtils from '../utils/TimeUtils.js';
 import User from './user.js';
+import Tag from './tag.js';
+import Component from './component.js';
 
 export default class TestCase extends KiwiBase {
 	
@@ -96,6 +98,52 @@ export default class TestCase extends KiwiBase {
 		const end = TimeUtils.dateToUtcString(rangeEnd);
 		
 		return await TestCase.filter({'create_date__range' : [start, end]});
+	}
+	
+	static async getByTag(tag) {
+		
+		const t = await Tag.resolveToTag(tag);
+		return TestCase.filter({'tag__in' : [t.getId()]});
+	}
+	
+	async getTags() {
+		return Tag.filter({'id__in' : this._source.tag})
+	}
+	
+	async addTag(tag) {
+		const t = await Tag.resolveToTag(tag);
+		await TestCase.callServerFunction('add_tag', [this.getId(), t.getName()]);
+		await this.update();
+	}
+	
+	async removeTag(tag) {
+		const t = await Tag.resolveToTag(tag);
+		await TestCase.callServerFunction('remove_tag', [this.getId(), t.getName()]);
+		await this.update();
+	}
+	
+	static async getByComponent(component) {
+		
+		let comp = await Component.resolveToComponent(component);
+		return TestCase.filter({'component__in' : [comp.getId()]});
+	}
+	
+	async getComponents() {
+		return Component.filter({'id__in' : this._source.component});
+	}
+	
+	async addComponent(component) {
+		const comp = await Component.resolveToComponent(component);
+		await TestCase.callServerFunction('add_component', [this.getId(), comp.getName()]);
+		await this.update();
+	}
+	
+	// Note - Kiwi has inconsistent standards.  
+	// Adding component uses string name, but removing requires int ID
+	async removeComponent(component) {
+		const comp = await Component.resolveToComponent(component);
+		await TestCase.callServerFunction('remove_component', [this.getId(), comp.getId()]);
+		await this.update();
 	}
 	
 	toString() {
