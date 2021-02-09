@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "debug": "node ./debug/app.js"
+	"debug": "node ./debug/app.js"
   },
   "author": "Jacob N Prymek",
   "private": true,
