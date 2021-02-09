@@ -1,4 +1,6 @@
-import KiwiBase from "./kiwiBase.js";
+import KiwiBase from './kiwiBase.js';
+import { NoItemNameFoundError } from './errors/noItemFoundError.js';
+import { DuplicateItemNameError } from './errors/duplicateItemError.js';
 
 export default class TestExecutionStatus extends KiwiBase {
 	

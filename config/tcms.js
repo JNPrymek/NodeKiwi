@@ -5,4 +5,4 @@ export default {
 	'username' : process.env.KIWI_USERNAME || '',
 	'password' : process.env.KIWI_PASSWORD || '',
 	'json_rpc' : '/json-rpc/'
-}
+};

@@ -5,43 +5,42 @@ import boxen from 'boxen';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 
-import TimeUtils from "../utils/TimeUtils.js";
+import TimeUtils from '../utils/TimeUtils.js';
 import TestExecution from '../models/testExecution.js';
-import Kiwi from "../kiwi_connector/kiwi.js";
+import Kiwi from '../kiwi_connector/kiwi.js';
 import TestExecutionStatus from '../models/testExecutionStatus.js';
 import ConnectionError from '../models/errors/connectionError.js';
 
-// DEV ONLY ignore SSL Certificate
-// process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-
 let args = 
 	yargs(hideBin(process.argv))
-	.scriptName('getWeeklyMetrics')
-	.usage('Usage: $0 [anchorDate] -w [weekStartIndex]')
-	.option('weekStartIndex', {
-		alias: 'w',
-		demandOption: false,
-		default: 0,
-		choices: [0, 1, 2, 3, 4, 5, 6],
-		describe: 'Index of first day of week.  Sun=0, Mon=1, Tues=2 ...',
-		type: 'number'
-	})
-	.string('_')
-	.alias('h', 'help')
-	.argv;
+		.scriptName('getWeeklyMetrics')
+		.usage('Usage: $0 [anchorDate] -w [weekStartIndex]')
+		.option('weekStartIndex', {
+			alias: 'w',
+			demandOption: false,
+			default: 0,
+			choices: [0, 1, 2, 3, 4, 5, 6],
+			describe: 'Index of first day of week.  Sun=0, Mon=1, Tues=2 ...',
+			type: 'number'
+		})
+		.string('_')
+		.alias('h', 'help')
+		.argv;
 
 const sourceDate = (args._[0] && TimeUtils.stringIsValidDate(args._[0])) ? new Date(args._[0]) : new Date();
 const startDate = TimeUtils.startOfWeek(sourceDate);
 // adjust for start of week
-const weekStartOffset = args.weekStartIndex;
+let weekStartOffset = args.weekStartIndex;
 if (weekStartOffset > 3) {
 	weekStartOffset -= 7;
 }
 startDate.setDate(startDate.getDate() + weekStartOffset);
 const endDate = TimeUtils.weekAfter(startDate);
 
-const BOXEN_DATE_SETTINGS = {borderStyle: 'classic', 
-							padding: {top: 0, bottom: 0, left: 15, right: 16}};
+const BOXEN_DATE_SETTINGS = {
+	borderStyle: 'classic', 
+	padding: {top: 0, bottom: 0, left: 15, right: 16}
+};
 const BOXEN_ZERO_TESTEXEC_SETTINGS = {
 	borderStyle: 'singleDouble',
 	padding: { top: 0, bottom: 0, left: 7, right: 8 }
@@ -79,7 +78,7 @@ async function main() {
 	}
 	
 	outString = `TestExecution Metrics for Week of ${chalk.green(TimeUtils.dateToLocalString(sourceDate, false))}`;
-	outString += `\n(${chalk.green(TimeUtils.dateToLocalString(startDate))} to ${chalk.green(TimeUtils.dateToLocalString(endDate))})`
+	outString += `\n(${chalk.green(TimeUtils.dateToLocalString(startDate))} to ${chalk.green(TimeUtils.dateToLocalString(endDate))})`;
 	console.log(boxen(outString, BOXEN_DATE_SETTINGS));
 	
 
@@ -111,7 +110,7 @@ async function main() {
 		for (const [statName, statColor] of Object.entries(statColors)) {
 			let statCount = userMetrics[statName] || 0;
 			statCount = statCount.toString().padStart(3, '0');
-			outString += `  ${chalk.bold.hex(statColor)(statName)}: ${chalk.hex(statColor)(statCount)}`
+			outString += `  ${chalk.bold.hex(statColor)(statName)}: ${chalk.hex(statColor)(statCount)}`;
 		}
 		//console.log(outString);
 		outString += '\n';
@@ -119,6 +118,7 @@ async function main() {
 	console.log(boxen(outString, {padding: {'top': 1, 'bottom': 0, 'left': 3, 'right': 3}, borderStyle: 'classic'}));
 }
 
+/* eslint-disable no-prototype-builtins */
 function upsertExecutionCount(user, status) {
 	// create new entry for user if not exists
 	if (!(results.hasOwnProperty(user))) {

@@ -18,5 +18,9 @@
     "lodash": "^4.17.20",
     "tough-cookie": "^4.0.0",
     "yargs": "^16.2.0"
+  },
+  "devDependencies": {
+    "babel-eslint": "^10.1.0",
+    "eslint": "^7.19.0"
   }
 }

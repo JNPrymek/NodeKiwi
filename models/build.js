@@ -1,6 +1,6 @@
-import { DuplicateItemNameError } from "./errors/duplicateItemError.js";
-import { NoItemNameFoundError } from "./errors/noItemFoundError.js";
-import KiwiBase from "./kiwiBase.js";
+import { DuplicateItemNameError } from './errors/duplicateItemError.js';
+import { NoItemNameFoundError } from './errors/noItemFoundError.js';
+import KiwiBase from './kiwiBase.js';
 
 export default class Build extends KiwiBase {
 	

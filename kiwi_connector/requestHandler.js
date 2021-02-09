@@ -11,10 +11,10 @@ export default class RequestHandler {
 	static cookieJar = new ToughCookie.CookieJar();
 	
 	static headersTemplate = {
-        'Content-Type': 'application/json',
-        'Accept': '*/*',
-        'Cookie': 'temptest=1',
-        'withCredentials': true
+		'Content-Type': 'application/json',
+		'Accept': '*/*',
+		'Cookie': 'temptest=1',
+		'withCredentials': true
 	};
 	
 	static bodyTemplate = {
@@ -27,26 +27,21 @@ export default class RequestHandler {
 		console.log('Body:  ' + JSON.stringify(this.bodyTemplate));
 	}
     
-    static async sendPost(url, body, headers =  {}) {
+	static async sendPost(url, body, headers =  {}) {
         
-        // Create header & body objects using passed values and templates
+		// Create header & body objects using passed values and templates
+		let sendBody = {};
+		_.defaults(sendBody, body);
+		_.defaults(sendBody, this.bodyTemplate);
         
-        let sendBody = {};
-        _.defaults(sendBody, body);
-        _.defaults(sendBody, this.bodyTemplate)
-        
-        let sendHeaders = {};
-        _.defaults(sendHeaders, headers);
+		let sendHeaders = {};
+		_.defaults(sendHeaders, headers);
 		_.defaults(sendHeaders, this.headersTemplate);
-		
-		// ToDo - remove debug logging
-		//console.log(`Axios Header:  ${JSON.stringify(sendHeaders)}`);
-		//console.log(`Axios Body:  ${JSON.stringify(sendBody)}`);
         
-        //Add cookies from cookie jar
-        sendHeaders.Cookie = await this.cookieJar.getCookieString(url);
+		//Add cookies from cookie jar
+		sendHeaders.Cookie = await this.cookieJar.getCookieString(url);
         
-        //Send request & await response
+		//Send request & await response
 		const response = await Axios
 			.post(url, JSON.stringify(sendBody), {headers: sendHeaders})
 			.catch(err => {
@@ -54,16 +49,16 @@ export default class RequestHandler {
 				throw new ConnectionError(errMsg);
 			});
         
-        // Save cookies if applicable
-        const responseCookies = response.headers['set-cookie'];
-        if (responseCookies != null)
-        {
-            responseCookies.forEach( resCookieString => {
-                //console.log(resCookieString);
-                this.cookieJar.setCookieSync(resCookieString, url);
-            });
-        }
+		// Save cookies if applicable
+		const responseCookies = response.headers['set-cookie'];
+		if (responseCookies != null)
+		{
+			responseCookies.forEach( resCookieString => {
+				//console.log(resCookieString);
+				this.cookieJar.setCookieSync(resCookieString, url);
+			});
+		}
         
-        return response;
-    }
+		return response;
+	}
 }

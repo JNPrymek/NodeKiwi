@@ -19,7 +19,7 @@ export default class Product extends KiwiBase {
 		return this._source.description;
 	}
 	
-	async setDescription() {
+	async setDescription(description) {
 		await this.update({'description' : description});
 	}
 	

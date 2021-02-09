@@ -35,7 +35,7 @@ export default class User extends KiwiBase {
 	}
 	
 	getFullName() {
-		return `${this.getFirstName()} ${this.getLastName()}`
+		return `${this.getFirstName()} ${this.getLastName()}`;
 	}
 	
 	getLastLogin() {
