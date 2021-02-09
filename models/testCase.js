@@ -107,7 +107,7 @@ export default class TestCase extends KiwiBase {
 	}
 	
 	async getTags() {
-		return Tag.filter({'id__in' : this._source.tag})
+		return Tag.filter({'id__in' : this._source.tag});
 	}
 	
 	async addTag(tag) {

@@ -31,7 +31,7 @@ export default class KiwiBase {
 		if (response.result || response.result == null) {
 			return response.result;
 		} else {
-			throw new ConnectionError("Kiwi - no results or error" + JSON.stringify(response));
+			throw new ConnectionError('Kiwi - no results or error' + JSON.stringify(response));
 		}
 	}
 	

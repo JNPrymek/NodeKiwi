@@ -1,6 +1,7 @@
 import KiwiBase from './kiwiBase.js';
-import { DuplicateItemNameError } from "./errors/duplicateItemError.js";
-import { NoItemNameFoundError } from "./errors/noItemFoundError.js";
+import { DuplicateItemNameError } from './errors/duplicateItemError.js';
+import { NoItemNameFoundError } from './errors/noItemFoundError.js';
+import Product from './product.js';
 
 export default class Component extends KiwiBase {
 	
@@ -52,7 +53,7 @@ export default class Component extends KiwiBase {
 		return this._source.description;
 	}
 	
-	async setDescription() {
+	async setDescription(description) {
 		await this.update({'description' : description});
 	}
 	

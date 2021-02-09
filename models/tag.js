@@ -1,6 +1,6 @@
 import KiwiBase from './kiwiBase.js';
-import { DuplicateItemNameError } from "./errors/duplicateItemError.js";
-import { NoItemNameFoundError } from "./errors/noItemFoundError.js";
+import { DuplicateItemNameError } from './errors/duplicateItemError.js';
+import { NoItemNameFoundError } from './errors/noItemFoundError.js';
 
 export default class Tag extends KiwiBase {
 	

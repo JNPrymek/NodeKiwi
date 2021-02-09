@@ -1,6 +1,6 @@
-import RequestHandler from './requestHandler.js'
-import KIWI_SETTINGS from '../config/tcms.js' 
-import ConnectionError from '../models/errors/connectionError.js'
+import RequestHandler from './requestHandler.js';
+import KIWI_SETTINGS from '../config/tcms.js'; 
+import ConnectionError from '../models/errors/connectionError.js';
 import LoginError from '../models/errors/loginError.js';
 
 export default class Kiwi {
@@ -35,9 +35,9 @@ export default class Kiwi {
 			throw new LoginError(`Error Code ${resData.error.code} - ${resData.error.message}`);
 		}
 		return resData.result;//.result;
-    }
+	}
     
-    static async logout() {
-        return await Kiwi.sendRpcMethod('Auth.logout');
-    }
+	static async logout() {
+		return await Kiwi.sendRpcMethod('Auth.logout');
+	}
 }
