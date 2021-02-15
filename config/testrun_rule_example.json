@@ -1,0 +1,27 @@
+[
+	{
+		"rule_name" : "Example Rule 1",
+		"build" : ["A", "B"],
+		"build_not" : ["C"],
+		"automation" : true,
+		"tag" : ["A", "B"],
+		"tag_not" : ["C", "D"],
+		"actions" : ["waive", "comment"],
+		"comment" : "This rule applies if TestRun build is A or B (not C).  It affects TestExecutions for Automated test cases, that have Tags A or B, AND do NOT have Tags C or D.  When applied, affected test cases should be waived, and a comment of {comment} be added."
+	},
+	{
+		"rule_name" : "Example Rule 2",
+		"build" : ["A", "B"],
+		"automation" : true,
+		"tag_not" : ["X"],
+		"actions" : ["comment"],
+		"comment" : "Add this comment to all automated tests for builds A or B, unless they have Tag X"
+	},
+	{
+		"rule_name" : "Example Rule 3",
+		"build_not" : ["A", "B"],
+		"tag" : ["X"],
+		"actions" : ["comment", "waive"],
+		"comment" : "Tests with Tag X should be waived with this comment, unless the tested build is A or B"
+	}
+]
