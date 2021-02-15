@@ -1,18 +1,14 @@
-import KiwiBase from './kiwiBase.js';
+import KiwiNamed from './kiwiNamed.js';
 import Product from './product.js';
 
-export default class Category extends KiwiBase {
+export default class Category extends KiwiNamed {
 	
 	constructor(source) {
 		super(source);
 	}
 	
-	getName() {
-		return this._source.name;
-	}
-	
-	async setName(name) {
-		await this.update({'name' : name});
+	static async getByName(name) {
+		return await super.getByName(name, 'Category');
 	}
 	
 	getDescription() {
