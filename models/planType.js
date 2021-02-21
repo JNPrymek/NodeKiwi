@@ -1,17 +1,13 @@
-import KiwiBase from './kiwiBase.js';
+import KiwiNamed from './kiwiNamed.js';
 
-export default class PlanType extends KiwiBase {
+export default class PlanType extends KiwiNamed {
 	
 	constructor(source) {
 		super(source);
 	}
 	
-	getName() {
-		return this._source.name;
-	}
-	
-	async setName(newName) {
-		await this.update({'name' : newName});
+	static async getByName(name) {
+		return super.getByName(name, 'PlanType');
 	}
 	
 	getDescription() {
