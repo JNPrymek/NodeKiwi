@@ -31,12 +31,14 @@ The following variables must be added to your shell session.
 `scripts/getWeeklyMetrics.js` provides a summary of test execution results for all users in a given week.  The default starting day of a week is Sunday.  
 Usage:
 ```
-getWeeklyMetrics [anchorDate] -w [weekStartIndex]
+getWeeklyMetrics -a  -e [anchorDate] -w [weekStartIndex]
 	Arguments:
 		anchorDate				Any date within the week for which you want metrics.
 								Defaults to current date (local time).
 	Options:
 		-w, --weekStartIndex	Index of first day of week.  Sun=0, Mon=1, Tues=2...
+		-e, -r, --execution		Display TestExecution Metrics (pass/fail/etc) for the specified week
+		-a, -c, --creation		Display TestCase Creation Metrics for the specified week
 		
 ```
 
