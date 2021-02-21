@@ -7,7 +7,7 @@ export default class PlanType extends KiwiNamed {
 	}
 	
 	static async getByName(name) {
-		return super.getByName(name, 'PlanType');
+		return await super.getByName(name, 'PlanType');
 	}
 	
 	getDescription() {
