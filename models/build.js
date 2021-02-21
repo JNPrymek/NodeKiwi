@@ -1,32 +1,13 @@
-import { DuplicateItemNameError } from './errors/duplicateItemError.js';
-import { NoItemNameFoundError } from './errors/noItemFoundError.js';
-import KiwiBase from './kiwiBase.js';
+import KiwiNamed from './kiwiNamed.js';
 
-export default class Build extends KiwiBase {
+export default class Build extends KiwiNamed {
 	
 	constructor(source) {
 		super(source);
 	}
 	
 	static async getByName(name) {
-		const res = await this.filter({'name' : name});
-		if (res.length == 1) {
-			return res[0];
-		}
-		else if (res.length < 1) {
-			throw new NoItemNameFoundError('Build', name);
-		}
-		else {
-			throw new DuplicateItemNameError('Build', name);
-		}
-	}
-	
-	getName() {
-		return this._source.name;
-	}
-	
-	async setName(name) {
-		await this.update({'name' : name});
+		return await super.getByName(name, 'Build');
 	}
 	
 	getVersion() {

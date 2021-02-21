@@ -1,25 +1,14 @@
-import KiwiBase from './kiwiBase.js';
-import { DuplicateItemNameError } from './errors/duplicateItemError.js';
-import { NoItemNameFoundError } from './errors/noItemFoundError.js';
+import KiwiNamed from './kiwiNamed.js';
 import Product from './product.js';
 
-export default class Component extends KiwiBase {
+export default class Component extends KiwiNamed {
 	
 	constructor(source) {
 		super(source);
 	}
 	
 	static async getByName(name) {
-		const res = await this.filter({'name' : name});
-		if (res.length == 1) {
-			return res[0];
-		}
-		else if (res.length < 1) {
-			throw new NoItemNameFoundError('Component', name);
-		}
-		else {
-			throw new DuplicateItemNameError('Component', name);
-		}
+		return await super.getByName(name, 'Component');
 	}
 	
 	static async resolveToComponent(component) {
@@ -39,14 +28,6 @@ export default class Component extends KiwiBase {
 		}
 		
 		return comp;
-	}
-	
-	getName() {
-		return this._source.name;
-	}
-	
-	async setName(name) {
-		await this.update({'name' : name});
 	}
 	
 	getDescription() {

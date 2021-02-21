@@ -16,7 +16,6 @@ export default class TestCase extends KiwiBase {
 		return this._source.is_automated;
 	}
 	async setAutomation(automation) {
-		//const newSource = await TestCase._updateServerObj(this.getId(), {'is_automated' : automation});
 		await this.update({'is_automated' : automation});
 	}
 	async setAutomated() {

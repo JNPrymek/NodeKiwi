@@ -1,5 +1,9 @@
 
 export default class TimeUtils {
+	
+	static serverStringToDate(rawString) {
+		return new Date(`${rawString} UTC`);
+	}
 
 	static dateToUtcString(date, includeTimeZone = false) {
 		this._assertDate(date);

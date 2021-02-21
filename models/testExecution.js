@@ -2,6 +2,7 @@ import KiwiBase from './kiwiBase.js';
 import TimeUtils from '../utils/TimeUtils.js';
 import User from './user.js';
 import Build from './build.js';
+import TestExecutionStatus from './testExecutionStatus.js';
 
 export default class TestExecution extends KiwiBase {
 	
@@ -10,7 +11,7 @@ export default class TestExecution extends KiwiBase {
 	}
 	
 	getCloseDate() {
-		return new Date(this._source.close_date + ' UTC');
+		return TimeUtils.serverStringToDate(this._source.close_date);
 	}
 	
 	getTestCaseId() {
@@ -68,8 +69,7 @@ export default class TestExecution extends KiwiBase {
 	
 	// Status
 	async getStatus() {
-		return null; //TODO - Implement Status class
-		//return await Status.getById(this._source.status_id);
+		return await TestExecutionStatus.getById(this._source.status_id);
 	}
 	getStatusId() {
 		return this._source.status_id;
