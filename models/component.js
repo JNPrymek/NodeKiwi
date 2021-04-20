@@ -5,6 +5,7 @@ export default class Component extends KiwiNamed {
 	
 	constructor(source) {
 		super(source);
+		delete this._source.cases;
 	}
 	
 	static async getByName(name) {

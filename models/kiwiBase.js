@@ -59,9 +59,10 @@ export default class KiwiBase {
 		if (results.length == 0) {
 			throw new NoIdFoundError(this.getClassName(), id);
 		}
-		if (results.length > 1) {
-			throw new DuplicateIdError(this.getClassName(), id);
-		}
+		// Kiwi version 10 now returns many component-testcase relation objects
+		// if (results.length > 1) {
+		// 	throw new DuplicateIdError(this.getClassName(), id);
+		// }
 		//return this(results[0]); // filter returns Class instances
 		return results[0];
 	}

@@ -4,6 +4,12 @@ export default class Tag extends KiwiNamed {
 	
 	constructor(source) {
 		super(source);
+		
+		// remove unused fields
+		delete this._source.case;
+		delete this._source.plan;
+		delete this._source.run;
+		delete this._source.bugs;
 	}
 	
 	static async getByName(name) {
