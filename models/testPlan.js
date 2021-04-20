@@ -3,6 +3,7 @@ import TimeUtils from '../utils/TimeUtils.js';
 import Product from './product.js';
 import Version from './version.js';
 import PlanType from './planType.js';
+import TestCase from './testCase.js';
 
 export default class TestPlan extends KiwiBase {
 	
@@ -98,6 +99,50 @@ export default class TestPlan extends KiwiBase {
 	
 	async setPlanType(newType) {
 		// TODO - implement
+	}
+	
+	/* #endregion */
+	
+	/* #region Test Cases */
+	
+	async getTestCases(sorted=true) {
+		// Return TCs in order of TC ID
+		let unsortedCaseList = await TestCase.filter({"plan__in" : [this.getId()]});
+		if(!sorted) {
+			return unsortedCaseList;
+		}
+		
+		// Get SortKeys
+		let sortKeys = await TestCase.callServerFunction('sortkeys', {'plan' : this.getId()});
+		
+		// Save Cases to object
+		let caseListObj = {};
+		unsortedCaseList.forEach( element => {
+			caseListObj[(element.getId().toString())] = element;
+		});
+		
+		let sortedCaseList = [];
+		
+		// Iterate over sort keys, in sort order (key = TC ID, val = sort order)
+		for (const [key, value] of Object.entries(sortKeys).sort(
+			(a, b) => {
+				const keyA = parseInt(a[1]);
+				const keyB = parseInt(b[1]);
+				if (keyA < keyB) {
+					return -1;
+				}
+				if (keyB < keyA) {
+					return 1;
+				}
+				return 0;
+			}
+		)) {
+			// Add TC from object to sorted list
+			sortedCaseList.push(caseListObj[key]);
+		}
+		
+		// Return TCs in order of sort keys
+		return sortedCaseList;
 	}
 	
 	/* #endregion */
