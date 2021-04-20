@@ -107,7 +107,7 @@ export default class TestPlan extends KiwiBase {
 	
 	async getTestCases(sorted=true) {
 		// Return TCs in order of TC ID
-		let unsortedCaseList = await TestCase.getById(this._source.cases);
+		let unsortedCaseList = await TestCase.filter({"plan__in" : [this.getId()]});
 		if(!sorted) {
 			return unsortedCaseList;
 		}
