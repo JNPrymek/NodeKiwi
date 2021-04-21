@@ -25,7 +25,9 @@ async function main(){
 	
 	console.log('----------------------------');
 	
-	
+	console.log('Tag.filter({id__range : [2, 4]})');
+	let tags = await Tag.filter({'id__range' : [2, 4]});
+	console.log(tags);
 	
 	console.log('----------------------------');
 	

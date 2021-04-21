@@ -25,5 +25,13 @@ async function main(){
 	cp1 = await Component.getByName('Core-1');
 	console.log(cp1);
 	
+	console.log('----------------------------');
+	
+	console.log('Component.getByIdRange(2, 4)');
+	cp1 = await Component.getByIdRange(2, 4);
+	console.log(cp1);
+	
+	console.log('----------------------------');
+	
 	await Kiwi.logout();
 }

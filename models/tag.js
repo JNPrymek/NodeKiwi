@@ -12,8 +12,18 @@ export default class Tag extends KiwiNamed {
 		delete this._source.bugs;
 	}
 	
-	static async getByName(name) {
-		return await super.getByName(name, 'Tag');
+	static async filter(filterDict = {}, excludeKeys = []) {
+		// Exclude 'cases' property by default
+		let exclude = [... excludeKeys];
+		exclude.push('case');
+		exclude.push('plan');
+		exclude.push('run');
+		exclude.push('bugs');
+		return super.filter(filterDict, exclude);
+	}
+	
+	static async getByName(name, excludeKeys = []) {
+		return await super.getByName(name, excludeKeys, 'Tag');
 	}
 	
 	static async resolveToTag(tag) {

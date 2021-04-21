@@ -7,8 +7,8 @@ export default class KiwiNamed extends KiwiBase {
 		super(source);
 	}
 	
-	static async getByName(name, className = 'KiwiNamed') {
-		const res = await this.filter({'name' : name});
+	static async getByName(name, excludeKeys = [], className = 'KiwiNamed') {
+		const res = await this.filter({'name' : name}, excludeKeys);
 		
 		if (res.length < 1) {
 			throw new NoItemNameFoundError(className, name);

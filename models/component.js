@@ -8,8 +8,15 @@ export default class Component extends KiwiNamed {
 		delete this._source.cases;
 	}
 	
-	static async getByName(name) {
-		return await super.getByName(name, 'Component');
+	static async filter(filterDict = {}, excludeKeys = []) {
+		// Exclude 'cases' property by default
+		let exclude = [... excludeKeys];
+		exclude.push('cases');
+		return super.filter(filterDict, exclude);
+	}
+	
+	static async getByName(name, excludeKeys) {
+		return await super.getByName(name, excludeKeys, 'Component');
 	}
 	
 	static async resolveToComponent(component) {

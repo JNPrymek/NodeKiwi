@@ -34,10 +34,18 @@ export default class KiwiBase {
 		}
 	}
 	
-	static async filter(filterDict = {}) {
+	static async filter(filterDict = {}, excludeKeys = []) {
 		let results = await this.callServerFunction('filter', filterDict);
+		
+		// remove excluded properties
+		this.excludePropertiesFromList(results, excludeKeys);
+		// remove duplicates from list (may have been unique with excluded properties)
+		results = this.excludeDuplicatesFromList(results);
 		let items = [];
-		results.forEach( element => items.push(new this(element)));
+		// remove excluded keys
+		for (let i = 0; i < results.length; i++) {
+			items.push(new this(results[i]));
+		}
 		return items;
 	}
 	
@@ -51,10 +59,11 @@ export default class KiwiBase {
 		this._source = newSource;
 	}
 	
-	static async _getSingleById(id) {
+	static async _getSingleById(id, excludeKeys = []) {
 		this._assertValidId(id);
 		
-		const results = await this.filter({'id' : id});
+		let results = await this.filter({'id' : id}, excludeKeys);
+		
 		if (results.length == 0) {
 			throw new NoIdFoundError(this.getClassName(), id);
 		}
@@ -63,9 +72,9 @@ export default class KiwiBase {
 		}
 	}
 	
-	static async getById(ids) {
+	static async getById(ids, excludeKeys = []) {
 		if (typeof(ids) == 'number') {
-			return await this._getSingleById(ids);
+			return await this._getSingleById(ids, excludeKeys);
 		}
 		if (!Array.isArray(ids)) {
 			throw new TypeError('IDs must be (positive integer) || (an array of positive integers)');
@@ -73,7 +82,21 @@ export default class KiwiBase {
 		
 		ids.forEach(element => this._assertValidId(element));
 		
-		return await this.filter({'id__in' : ids});
+		return await this.filter({'id__in' : ids}, excludeKeys);
+	}
+	
+	static async getByIdRange(start, end, excludeKeys = []){
+		this._assertValidId(start);
+		this._assertValidId(end);
+		
+		// Request requires arguments to be in correct order
+		if (end < start) {
+			const temp = start;
+			start = end;
+			end = temp;
+		}
+		
+		return await this.filter({'id__range' : [start, end]}, excludeKeys);
 	}
 	
 	// return true if id contains a valid int ID number
@@ -85,6 +108,33 @@ export default class KiwiBase {
 			throw new RangeError('ID must be a positive integer');
 		}
 		return true;
+	}
+	
+	static excludePropertiesFromList(itemList, excludeKeys) {
+		if (!Array.isArray(itemList)) {
+			throw new TypeError('itemList must be an array of Kiwi items');
+		}
+		if (!Array.isArray(excludeKeys)) {
+			throw new TypeError('excludeKeys must be an array of strings');
+		}
+		
+		// iterate through Kiwi items
+		for (let i = 0; i < itemList.length; i++) {
+			// iterate through excluded key names
+			for (let e = 0; e < excludeKeys.length; e++) {
+				// remove property from item
+				delete (itemList[i])[excludeKeys[e]];
+			}
+		}
+		return itemList;
+	}
+	
+	// filter list of objects on the 'id' property and remove duplicates
+	static excludeDuplicatesFromList(itemList, filterProp = 'id') {
+		const unique =  itemList.filter( (obj, pos, arr) => {
+			return arr.map(mapObj => mapObj[filterProp]).indexOf(obj[filterProp]) === pos;
+		});
+		return unique;
 	}
 	
 	static async getAll() {
