@@ -21,5 +21,9 @@ async function main(){
 	
 	console.log('----------------------------');
 	
+	console.log('Component.getByName(Core-1)');
+	cp1 = await Component.getByName('Core-1');
+	console.log(cp1);
+	
 	await Kiwi.logout();
 }

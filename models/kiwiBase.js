@@ -1,6 +1,5 @@
 import Kiwi from '../kiwi_connector/kiwi.js';
 import ConnectionError from './errors/connectionError.js';
-import DuplicateIdError from './errors/duplicateItemError.js';
 import NoIdFoundError from './errors/noItemFoundError.js';
 
 export default class KiwiBase {
@@ -59,12 +58,9 @@ export default class KiwiBase {
 		if (results.length == 0) {
 			throw new NoIdFoundError(this.getClassName(), id);
 		}
-		// Kiwi version 10 now returns many component-testcase relation objects
-		// if (results.length > 1) {
-		// 	throw new DuplicateIdError(this.getClassName(), id);
-		// }
-		//return this(results[0]); // filter returns Class instances
-		return results[0];
+		else {
+			return results[0];
+		}
 	}
 	
 	static async getById(ids) {
