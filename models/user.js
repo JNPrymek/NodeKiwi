@@ -1,7 +1,6 @@
 import KiwiBase from './kiwiBase.js';
 import TimeUtils from '../utils/TimeUtils.js';
 import { NoUsernameFoundError } from './errors/noItemFoundError.js';
-import { DuplicateUsernameError } from './errors/duplicateItemError.js';
 
 export default class User extends KiwiBase {
 	
@@ -11,14 +10,11 @@ export default class User extends KiwiBase {
 	
 	static async getByUserName(name) {
 		let res = await this.filter({'username' : name});
-		if (res.length == 1) {
-			return res[0];
-		}
-		else if (res.length < 1) {
+		if (res.length < 1) {
 			throw new NoUsernameFoundError(name);
-		} 
+		}
 		else {
-			throw new DuplicateUsernameError(name);
+			return res[0];
 		}
 	}
 	

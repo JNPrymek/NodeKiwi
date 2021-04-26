@@ -1,6 +1,5 @@
 import KiwiBase from './kiwiBase.js';
 import { NoItemNameFoundError } from './errors/noItemFoundError.js';
-import { DuplicateItemNameError } from './errors/duplicateItemError.js';
 
 export default class KiwiNamed extends KiwiBase {
 	
@@ -8,16 +7,14 @@ export default class KiwiNamed extends KiwiBase {
 		super(source);
 	}
 	
-	static async getByName(name, className = 'KiwiNamed') {
-		const res = await this.filter({'name' : name});
-		if (res.length == 1) {
-			return res[0];
-		}
-		else if (res.length < 1) {
+	static async getByName(name, excludeKeys = [], className = 'KiwiNamed') {
+		const res = await this.filter({'name' : name}, excludeKeys);
+		
+		if (res.length < 1) {
 			throw new NoItemNameFoundError(className, name);
 		}
 		else {
-			throw new DuplicateItemNameError(className, name);
+			return res[0];
 		}
 	}
 	

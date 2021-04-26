@@ -10,9 +10,11 @@ export default class TestExecution extends KiwiBase {
 		super(source);
 	}
 	
-	getCloseDate() {
-		return TimeUtils.serverStringToDate(this._source.close_date);
+	getStopDate() {
+		return TimeUtils.serverStringToDate(this._source.stop_date);
 	}
+	
+	/* #region Test Case Info */
 	
 	getTestCaseId() {
 		return this._source.case_id;
@@ -21,6 +23,10 @@ export default class TestExecution extends KiwiBase {
 	getTestCaseSummary() {
 		return this._source.case;
 	}
+	
+	/* #endregion */
+	
+	/* #region Test Run Info */
 	
 	getTestRunId() {
 		return this._source.run_id;
@@ -34,49 +40,71 @@ export default class TestExecution extends KiwiBase {
 		return this._source.sortkey;
 	}
 	
-	// Assignee
+	/* #endregion */
+	
+	/* #region Assignee */
+	
 	async getAssignee() {
-		return await User.getById(this._source.assignee_id);
+		return await User.getById(this.getAssigneeId());
 	}
+	
 	getAssigneeId() {
-		return this._source.assignee_id;
-	}
-	getAssigneeUsername() {
 		return this._source.assignee;
 	}
 	
-	// Tester
+	getAssigneeUsername() {
+		return this._source.assignee__username;
+	}
+	
+	/* #endregion */
+	
+	/* #region Tester */
+	
 	async getTester() {
-		return await User.getById(this._source.tested_by_id);
+		return await User.getById(this.getTesterId());
 	}
+	
 	getTesterId() {
-		return this._source.tested_by_id;
-	}
-	getTesterUsername() {
 		return this._source.tested_by;
 	}
 	
-	// Build
-	getBuildId() {
-		return this._source.build_id;
+	getTesterUsername() {
+		return this._source.tested_by__username;
 	}
-	getBuildName() {
+	
+	/* #endregion */
+	
+	/* #region Build */
+	
+	getBuildId() {
 		return this._source.build;
 	}
+	
+	getBuildName() {
+		return this._source.build__name;
+	}
+	
 	async getBuild() {
 		return await Build.getById(this.getBuildId());
 	}
 	
-	// Status
+	/* #endregion */
+	
+	/* #region Status */
+	
 	async getStatus() {
-		return await TestExecutionStatus.getById(this._source.status_id);
+		return await TestExecutionStatus.getById(this.getStatusId());
 	}
+	
 	getStatusId() {
-		return this._source.status_id;
-	}
-	getStatusName() {
 		return this._source.status;
 	}
+	
+	getStatusName() {
+		return this._source.status__name;
+	}
+	
+	/* #endregion */
 	
 	// History
 	async getHistory() {
@@ -88,6 +116,6 @@ export default class TestExecution extends KiwiBase {
 		const start = TimeUtils.dateToUtcString(rangeStart);
 		const end = TimeUtils.dateToUtcString(rangeEnd);
 		
-		return await TestExecution.filter({'close_date__range' : [start, end]});
+		return await TestExecution.filter({'stop_date__range' : [start, end]});
 	}
 }

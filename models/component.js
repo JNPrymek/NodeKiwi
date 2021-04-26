@@ -1,14 +1,25 @@
 import KiwiNamed from './kiwiNamed.js';
 import Product from './product.js';
+import User from './user.js';
 
 export default class Component extends KiwiNamed {
 	
 	constructor(source) {
 		super(source);
+		delete this._source.cases;
 	}
 	
-	static async getByName(name) {
-		return await super.getByName(name, 'Component');
+	/* #region Static Server Methods */
+	
+	static async filter(filterDict = {}, excludeKeys = []) {
+		// Exclude 'cases' property by default
+		let exclude = [... excludeKeys];
+		exclude.push('cases');
+		return super.filter(filterDict, exclude);
+	}
+	
+	static async getByName(name, excludeKeys) {
+		return await super.getByName(name, excludeKeys, 'Component');
 	}
 	
 	static async resolveToComponent(component) {
@@ -30,6 +41,8 @@ export default class Component extends KiwiNamed {
 		return comp;
 	}
 	
+	/* #endregion */
+	
 	getDescription() {
 		return this._source.description;
 	}
@@ -39,8 +52,28 @@ export default class Component extends KiwiNamed {
 	}
 	
 	async getProduct() {
-		return await Product.getById(this._source.product_id);
+		return await Product.getById(this._source.product);
 	}
+	
+	/* #region User Info */
+	
+	getInitialOwnerId() {
+		return this._source.initial_owner;
+	}
+	
+	async getInitialOwner() {
+		return await User.getById(this.getInitialOwnerId());
+	}
+	
+	getInitialQaContactId() {
+		return this._source.initial_qa_contact;
+	}
+	
+	async getInitialQaContact() {
+		return await User.getById(this.getInitialQaContactId());
+	}
+	
+	/* #endregion */
 	
 	toString() {
 		return `${super.toString()} : ${this.getName()}`;

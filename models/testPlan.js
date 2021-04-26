@@ -146,4 +146,24 @@ export default class TestPlan extends KiwiBase {
 	}
 	
 	/* #endregion */
+	
+	/* #region Tags */
+	
+	async getTags() {
+		return Tag.filter({'plan__in' : [this.getId()]});
+	}
+	
+	async addTag(tag) {
+		const t = await Tag.resolveToTag(tag);
+		await TestPlan.callServerFunction('add_tag', [this.getId(), t.getName()]);
+		await this.update();
+	}
+	
+	async removeTag(tag) {
+		const t = await Tag.resolveToTag(tag);
+		await TestPlan.callServerFunction('remove_tag', [this.getId(), t.getName()]);
+		await this.update();
+	}
+	
+	/* #endregion */
 }
