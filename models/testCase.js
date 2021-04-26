@@ -12,27 +12,60 @@ export default class TestCase extends KiwiBase {
 		super(source);
 	}
 	
+	/* #region Static Server Methods */
+	
+	static async getByDateRange(rangeStart = TimeUtils.today(), rangeEnd = TimeUtils.tomorrow()) {
+		const start = TimeUtils.dateToUtcString(rangeStart);
+		const end = TimeUtils.dateToUtcString(rangeEnd);
+		
+		return await TestCase.filter({'create_date__range' : [start, end]});
+	}
+	
+	static async getByTag(tag) {
+		const t = await Tag.resolveToTag(tag);
+		return TestCase.filter({'tag__in' : [t.getId()]});
+	}
+	
+	static async getByComponent(component) {
+		
+		let comp = await Component.resolveToComponent(component);
+		return TestCase.filter({'component__in' : [comp.getId()]});
+	}
+	
+	/* #endregion */
+	
+	/* #region Automation */
+	
 	getAutomation() {
 		return this._source.is_automated;
 	}
+	
 	async setAutomation(automation) {
 		await this.update({'is_automated' : automation});
 	}
+	
 	async setAutomated() {
 		await this.setAutomation(true);
 	}
+	
 	async setManual() {
 		await this.setAutomation(false);
 	}
 	
+	/* #endregion */
+	
+	/* #region Author */
+	
 	getAuthorId() {
-		return this._source.author_id;
-	}
-	getAuthorName() {
 		return this._source.author;
 	}
+	
+	getAuthorName() {
+		return this._source.author__username;
+	}
+	
 	async getAuthor() {
-		return await User.getById(this._source.author_id);
+		return await User.getById(this.getAuthorId());
 	}
 	
 	async setAuthor(newAuthor) {
@@ -52,6 +85,8 @@ export default class TestCase extends KiwiBase {
 		
 		await this.update({'author' : author.getId()});
 	}
+	
+	/* #endregion */
 	
 	getArgs() {
 		return this._source.arguments;
@@ -78,9 +113,12 @@ export default class TestCase extends KiwiBase {
 		return new Date(this._source.create_date + ' UTC');
 	}
 	
+	/* #region Summary */
+	
 	getSummary() {
 		return this._source.summary;
 	}
+	
 	getName() {
 		return this.getSummary();
 	}
@@ -88,25 +126,17 @@ export default class TestCase extends KiwiBase {
 	async setSummary(summary) {
 		await this.update({'summary': summary});
 	}
+	
 	async setName(name) {
 		return await this.setSummary(name);
 	}
 	
-	static async getByDateRange(rangeStart = TimeUtils.today(), rangeEnd = TimeUtils.tomorrow()) {
-		const start = TimeUtils.dateToUtcString(rangeStart);
-		const end = TimeUtils.dateToUtcString(rangeEnd);
-		
-		return await TestCase.filter({'create_date__range' : [start, end]});
-	}
+	/* #endregion */
 	
-	static async getByTag(tag) {
-		
-		const t = await Tag.resolveToTag(tag);
-		return TestCase.filter({'tag__in' : [t.getId()]});
-	}
+	/* #region Tags */
 	
 	async getTags() {
-		return Tag.filter({'id__in' : this._source.tag});
+		return Tag.filter({'case__in' : [this.getId()]});
 	}
 	
 	async addTag(tag) {
@@ -121,14 +151,12 @@ export default class TestCase extends KiwiBase {
 		await this.update();
 	}
 	
-	static async getByComponent(component) {
-		
-		let comp = await Component.resolveToComponent(component);
-		return TestCase.filter({'component__in' : [comp.getId()]});
-	}
+	/* #endregion */
+	
+	/* #region Components */
 	
 	async getComponents() {
-		return Component.filter({'id__in' : this._source.component});
+		return await Component.filter({'cases__in' : [this.getId()]});
 	}
 	
 	async addComponent(component) {
@@ -137,13 +165,27 @@ export default class TestCase extends KiwiBase {
 		await this.update();
 	}
 	
-	// Note - Kiwi has inconsistent standards.  
+	// Note - Kiwi's API has inconsistent standards, due to needs of the Web UI.
 	// Adding component uses string name, but removing requires int ID
 	async removeComponent(component) {
 		const comp = await Component.resolveToComponent(component);
 		await TestCase.callServerFunction('remove_component', [this.getId(), comp.getId()]);
 		await this.update();
 	}
+	
+	/* #endregion */
+	
+	/* #region Priority */
+	
+	getPriorityId() {
+		return this._source.priority;
+	}
+	
+	getPriority() {
+		return this._source.priority__value;
+	}
+	
+	/* #endregion */
 	
 	toString() {
 		return `${super.toString()} : ${this.getSummary()}`;

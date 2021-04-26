@@ -81,15 +81,15 @@ export default class TestRun extends KiwiBase {
 	/* #region Build */
 	
 	getBuildId() {
-		return this._source.build_id;
-	}
-	
-	getBuildName() {
 		return this._source.build;
 	}
 	
+	getBuildName() {
+		return this._source.build__name;
+	}
+	
 	async getBuild() {
-		return await Build.getById(this._source.build_id);
+		return await Build.getById(this.getBuildId());
 	}
 	
 	// TODO - set Build (Obj, ID, Name)
@@ -168,10 +168,20 @@ export default class TestRun extends KiwiBase {
 	/* #region Tags */
 	
 	async getTags() {
-		return await Tag.getById(this._source.tag);
+		return Tag.filter({'plan__in' : [this.getId()]});
 	}
 	
-	// TODO - add/remove tag (uses specific method)
+	async addTag(tag) {
+		const t = await Tag.resolveToTag(tag);
+		await TestRun.callServerFunction('add_tag', [this.getId(), t.getName()]);
+		await this.update();
+	}
+	
+	async removeTag(tag) {
+		const t = await Tag.resolveToTag(tag);
+		await TestRun.callServerFunction('remove_tag', [this.getId(), t.getName()]);
+		await this.update();
+	}
 	
 	/* #endregion */
 	
